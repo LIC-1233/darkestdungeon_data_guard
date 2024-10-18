@@ -3,7 +3,7 @@ from typing import Sequence
 
 import mobase
 from PyQt6.QtGui import QIcon
-from PyQt6.QtWidgets import QWidget
+from PyQt6.QtWidgets import QMessageBox, QWidget
 
 logger = logging.getLogger()
 logger.setLevel(logging.DEBUG)
@@ -23,8 +23,15 @@ class DarkestDungeonIPluginTool(mobase.IPluginTool):
     def setParentWidget(self, parent: QWidget):
         self.__parentWidget = parent
 
+    def requirements(self) -> list[mobase.IPluginRequirement]:
+        return [mobase.PluginRequirementFactory.gameDependency("Darkest Dungeon")]
+
     def display(self) -> None:
-        logger.debug("display")
+        QMessageBox.critical(
+            self.__parentWidget,
+            "display",
+            "暗黑地牢数据完整性检测暗黑地牢mod文件数据完整性",
+        )
         pass
 
     def displayName(self) -> str:
