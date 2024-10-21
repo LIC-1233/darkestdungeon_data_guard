@@ -9,4 +9,6 @@ venv
 # Mob / Umbrella
 mob.log
 vsbuild
-lib
+# lib
+test.*
+test
