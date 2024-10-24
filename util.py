@@ -1,11 +1,11 @@
 import logging
+import re
 from collections import defaultdict
 from pathlib import Path
 
 import chardet
 
-logger = logging.getLogger(__name__)
-logger.addHandler(logging.StreamHandler())
+logger = logging.getLogger()
 
 
 class util:
@@ -18,48 +18,6 @@ class util:
             return chardet.detect(f.read(1024))["encoding"]
 
     @staticmethod
-    def real_digit(string: str):
-        try:
-            int(string)
-            return True
-        except Exception:
-            return False
-
-
-class darkest:
-    def __init__(
-        self,
-        data: dict[
-            str,
-            list[
-                dict[
-                    str,
-                    list[str]
-                    | int
-                    | bool
-                    | None
-                    | str
-                    | tuple[str | bool | int, str | bool | int],
-                ]
-            ],
-        ],
-    ):
-        self.data: dict[
-            str,
-            list[
-                dict[
-                    str,
-                    list[str]
-                    | int
-                    | bool
-                    | str
-                    | tuple[str | bool | int, str | bool | int]
-                    | None,
-                ]
-            ],
-        ] = data
-
-    @staticmethod
     def is_number_and_percent_str(s: str):
         for char in s:
             if not (char.isdigit() or char == "%"):
@@ -67,127 +25,137 @@ class darkest:
         return True
 
     @staticmethod
-    def paser(file: str | Path):
-        logger.debug(f"pasering: {file}")
+    def real_int(string: str):
+        try:
+            int(string)
+            return True
+        except Exception:
+            return False
+
+    @staticmethod
+    def real_float(string: str):
+        try:
+            float(string)
+            return True
+        except Exception:
+            return False
+
+
+class darkest:
+    class obj(str):
+        pass
+
+    def __init__(
+        self,
         data: dict[
             str,
-            list[
-                dict[
-                    str,
-                    list[str]
-                    | int
-                    | bool
-                    | None
-                    | str
-                    | tuple[str | bool | int, str | bool | int],
-                ]
-            ],
-        ] = defaultdict(list)
-        encoding = util.detect_encoding(file)
-        logger.debug(f"encoding: {encoding}")
-        if not encoding:
-            print(f"error file encoding: {file}")
-            return False
-        primary_key = None
-        primary_value: dict[
-            str,
-            list[str]
-            | int
-            | bool
-            | None
-            | str
-            | tuple[str | bool | int, str | bool | int],
-        ] = defaultdict(list)
-        content = Path(file).read_text(errors="ignore")
-        for line in content.split("\n"):
-            line = line.split("//")[0]
-            if not len(line.strip()):
-                continue
-            if ":" in line:
-                if primary_key is None:
-                    if primary_value != {}:
-                        raise ValueError(f"primary key not found: {file}:{primary_key}")
-                else:
-                    data[primary_key].append(primary_value)
-                logger.debug(f"primary key: {primary_key}, value: {primary_value}")
-                primary_key = line.split(":")[0].strip()
-                logger.debug(f"add primary key: {primary_key}")
-                line = line.split(":")[1]
-                primary_value: dict[
-                    str,
-                    list[str]
-                    | int
-                    | bool
-                    | None
-                    | str
-                    | tuple[str | bool | int, str | bool | int],
-                ] = defaultdict(list)
+            list[dict[str, list[str | bool | int | float] | str | bool | int | float]],
+        ],
+        strict: bool = True,
+    ):
+        self.data = data
+        self.__strict: bool = strict
 
-            def get_secondary_dict(line: str):
-                secondary_dict: dict[
-                    str,
-                    list[str]
-                    | int
-                    | bool
-                    | None
-                    | str
-                    | tuple[str | bool | int, str | bool | int],
-                ] = defaultdict(list)
-                secondary_key: str | None = None
-                secondary_values: list[str | bool | int] = []
-
-                def format_value(value: list[str | bool | int]):
-                    if len(value) == 0:
-                        return None
-                    elif len(value) == 1:
-                        return secondary_values[0]
-                    elif len(value) == 2:
-                        return (secondary_values[0], secondary_values[1])
-                    else:
-                        return [str(item) for item in secondary_values]
-
-                sections = line
-                for section in sections.split():
-                    if not len(section.strip()):
-                        continue
-
-                    if section.startswith(
-                        "."
-                    ) and not darkest.is_number_and_percent_str(section.strip(".")):
-                        if secondary_key is None:
-                            pass
+    def __str__(self) -> str:
+        if self.__strict:
+            content = ""
+            for p_key, p_values in self.data.items():
+                for p_value in p_values:
+                    content += f"{p_key}: "
+                    for s_key, s_values in p_value.items():
+                        content += f".{s_key} "
+                        if isinstance(s_values, list):
+                            for s_value in s_values:
+                                content += f"{s_value} "
                         else:
-                            secondary_dict[secondary_key] = format_value(
-                                secondary_values
-                            )
-                            secondary_values: list[str | bool | int] = []
-                            logger.debug(
-                                f"add secondary key: {section}, values: {secondary_dict[secondary_key]}"
-                            )
-                        secondary_key = section.strip(".")
-                        logger.debug(f"found secondary key: {section}")
-                    else:
-                        if secondary_key is None:
-                            print("Invalid", section, file, line)
-                        else:
-                            logger.debug(f"found secondary value: {section}")
-                            if section.lower() == "true":
-                                secondary_values.append(True)
-                            elif section.lower() == "false":
-                                secondary_values.append(False)
-                            elif util.real_digit(section):
-                                secondary_values.append(int(section))
+                            content += f"{s_values} "
+                    content += "\n"
+            return content
+        else:
+            content = ""
+            for p_key, p_values in self.data.items():
+                for p_value in p_values:
+                    content += f"{p_key}: "
+                    for s_key, s_values in p_value.items():
+                        content += f".{s_key} "
+                        if not isinstance(s_values, list):
+                            s_values = [s_values]
+                        for s_value in s_values:
+                            if isinstance(s_value, darkest.obj):
+                                content += f"{s_value} "
+                            elif isinstance(s_value, str):
+                                content += f'"{s_value}" '
+                            elif isinstance(s_value, bool):
+                                content += f"{s_value} ".lower()
+                            elif isinstance(s_value, int):
+                                content += f"{s_value} "
                             else:
-                                secondary_values.append(section.strip('"').strip("'"))
-                if secondary_key is None:
-                    pass
-                else:
-                    secondary_dict[secondary_key] = format_value(secondary_values)
-                return secondary_dict
+                                content += f"{s_value} "
+                    content += "\n"
+            return content
 
-            logger.debug(f"found secondary value: {line}")
-            secondary_dict = get_secondary_dict(line)
-            primary_value.update(secondary_dict)
-        if primary_key is not None:
-            data[primary_key].append(primary_value)
-        return darkest(data)
+    @staticmethod
+    def paser(s: str, strict: bool = True):
+        # logger.debug(f"pasering: {s}")
+        pattern = r'(?:"[^"]*"|\S+)'
+        result: dict[
+            str,
+            list[dict[str, list[str | bool | int | float] | str | bool | int | float]],
+        ] = defaultdict(list)
+        current_p_key: str = ""
+        current_p_value: dict[
+            str, list[str | bool | int | float] | str | bool | int | float
+        ] = {}
+        current_s_key: str = ""
+        current_s_value: list[str | bool | int | float] = []
+        content: str = re.sub(r"//.*\n", "", s)
+        sections: list[str] = re.findall(pattern, content)
+        for section in sections:
+            if section[-1] == ":":
+                if current_p_key:
+                    if strict:
+                        current_p_value.update({current_s_key: current_s_value})
+                    elif len(current_s_value) == 1:
+                        current_p_value.update({current_s_key: current_s_value[0]})
+                    else:
+                        current_p_value.update({current_s_key: current_s_value})
+                    result[current_p_key].append(current_p_value)
+                current_p_key = section[:-1]
+                current_p_value = {}
+                current_s_key = ""
+                current_s_value = []
+            elif section[0] == "." and not util.is_number_and_percent_str(section[1:]):
+                if current_s_key:
+                    if len(current_s_value) == 1:
+                        current_p_value.update({current_s_key: current_s_value[0]})
+                    else:
+                        current_p_value.update({current_s_key: current_s_value})
+                current_s_key = section[1:]
+                current_s_value = []
+            else:
+                if strict:
+                    current_s_value.append(section)
+                else:
+                    if (section[0] == '"' and section[-1] == '"') or (
+                        section[0] == "'" and section[-1] == "'"
+                    ):
+                        current_s_value.append(section[1:-1])
+                    elif section.lower() == "true":
+                        current_s_value.append(True)
+                    elif section.lower() == "false":
+                        current_s_value.append(False)
+                    elif util.real_int(section):
+                        current_s_value.append(int(section))
+                    elif util.real_float(section):
+                        current_s_value.append(float(section))
+                    else:
+                        current_s_value.append(darkest.obj(section))
+        if current_p_key:
+            if strict:
+                current_p_value.update({current_s_key: current_s_value})
+            elif len(current_s_value) == 1:
+                current_p_value.update({current_s_key: current_s_value[0]})
+            else:
+                current_p_value.update({current_s_key: current_s_value})
+            result[current_p_key].append(current_p_value)
+        return darkest(result, strict)

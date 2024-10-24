@@ -1,7 +1,7 @@
 # note: this file is for local development, currently the file is not used to build
 # the plugin
 [tool.poetry]
-name = "basic-games"
+name = "darkestdungeon-data-guard"
 version = "0.1.0"
 description = ""
 authors = []
@@ -12,16 +12,14 @@ readme = "README.md"
 python = "^3.12"
 psutil = "^5.8.0"
 vdf = "3.4"
-lzokay = "1.1.5"
 pyqt6 = "6.7.0"
 chardet = "^5.2.0"
-pandas = "^2.2.3"
 
 [tool.poetry.group.dev.dependencies]
-mobase-stubs = { version = "^2.5.1a0", allow-prereleases = true }
+mobase-stubs = { version = "~2.5.1a0", allow-prereleases = true }
 pyqt6 = "^6.7.0"
 pyright = "^1.1.365"
-ruff = "^0.6.9"
+ruff = "^0.7.0"
 types-psutil = "^5.9.5.20240516"
 poethepoet = "^0.23.0"
 
