@@ -1,3 +1,7 @@
+# darkest
+
+空格是可选的，妈的
+
 # effect.darkest
 
 任何.target "target" .riposte 1都必须有.riposte_validate false或true 不然加载崩溃

@@ -6,14 +6,13 @@ from PyQt6.QtGui import QIcon
 from PyQt6.QtWidgets import QMessageBox, QWidget
 
 logger = logging.getLogger()
-logger.setLevel(logging.DEBUG)
 
 
 class DarkestDungeonIPluginTool(mobase.IPluginTool):
     def __init__(self):
         super(DarkestDungeonIPluginTool, self).__init__()
         self.__organizer = None
-        self.__parentWidget = None
+        self.__parentWidget: QWidget
         pass
 
     def init(self, organizer: mobase.IOrganizer):
@@ -21,12 +20,13 @@ class DarkestDungeonIPluginTool(mobase.IPluginTool):
         return True
 
     def setParentWidget(self, parent: QWidget):
-        self.__parentWidget = parent
+        self.__parentWidget: QWidget = parent
 
     def requirements(self) -> list[mobase.IPluginRequirement]:
         return [mobase.PluginRequirementFactory.gameDependency("Darkest Dungeon")]
 
     def display(self) -> None:
+        self.__parentWidget.show()
         QMessageBox.critical(
             self.__parentWidget,
             "display",
