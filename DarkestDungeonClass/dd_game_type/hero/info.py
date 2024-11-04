@@ -1,6 +1,10 @@
-from pydantic import BaseModel, Field, ValidationError
+from pydantic import Field, ValidationError
 
+from DarkestDungeonClass.dd_game_type.base import BaseModel
+from DarkestDungeonClass.dd_game_type.buff.buff import buff
 from DarkestDungeonClass.dd_game_type.effect import effect_type
+from DarkestDungeonClass.dd_game_type.loot.loot import loot
+from DarkestDungeonClass.dd_game_type.trait.trait import trait
 
 
 class resistances(BaseModel):
@@ -444,5 +448,269 @@ class combat_skill(BaseModel):
         default=None,
         title="是否忽略死亡门",
         description="是否忽略死亡门",
+        json_schema_extra={"format": {"zh-cn": ""}, "tags": []},
+    )
+
+
+class tag(BaseModel):
+    id: str = Field(
+        default=None,
+        title="标签ID",
+        description="标签ID",
+        json_schema_extra={"format": {"zh-cn": ""}, "tags": []},
+    )
+
+
+class mode(BaseModel):
+    id: str = Field(
+        default=None,
+        title="模式ID",
+        description="模式ID",
+        json_schema_extra={"format": {"zh-cn": ""}, "tags": []},
+    )
+    is_raid_default: bool = Field(
+        default=None,
+        title="是否默认",
+        description="是否默认",
+        json_schema_extra={"format": {"zh-cn": ""}, "tags": []},
+    )
+    battle_complete_combat_skill_id: combat_skill = Field(
+        default=None,
+        title="战斗完成时战斗技能ID",
+        description="战斗完成时战斗技能ID",
+        json_schema_extra={"format": {"zh-cn": ""}, "tags": []},
+    )
+    is_targetable: bool = Field(
+        default=None,
+        title="是否可选目标",
+        description="是否可选目标",
+        json_schema_extra={"format": {"zh-cn": ""}, "tags": []},
+    )
+
+
+class overstressed_modifier(BaseModel):
+    override_trait_type_ids: list[trait] = Field(
+        default=None,
+        title="爆压traitID",
+        description="爆压traitID",
+        json_schema_extra={"format": {"zh-cn": ""}, "tags": []},
+    )
+    override_trait_type_chances: list[float] = Field(
+        default=None,
+        title="爆压trait几率",
+        description="爆压trait几率",
+        json_schema_extra={"format": {"zh-cn": ""}, "tags": []},
+    )
+
+
+class quirk_modifier(BaseModel):
+    incompatible_class_ids: list[str] = Field(
+        default=None,
+        title="不兼容ClassID",
+        description="不兼容ClassID",
+        json_schema_extra={"format": {"zh-cn": ""}, "tags": []},
+    )
+
+
+class activity_modifier(BaseModel):
+    override_valid_activity_ids: list[str] = Field(
+        default=None,
+        title="有效活动ID",
+        description="有效活动ID",
+        json_schema_extra={"format": {"zh-cn": ""}, "tags": []},
+    )
+
+
+class incompatible_party_member(BaseModel):
+    id: str = Field(
+        default=None,
+        title="ID",
+        description="ID",
+        json_schema_extra={"format": {"zh-cn": ""}, "tags": []},
+    )
+    hero_tag: str = Field(
+        default=None,
+        title="英雄ID",
+        description="英雄ID",
+        json_schema_extra={"format": {"zh-cn": ""}, "tags": []},
+    )
+
+
+class deaths_door(BaseModel):
+    enter_effects: list[effect_type.effect] = Field(
+        default=None,
+        title="死门入effectID",
+        description="死门入effectID",
+        json_schema_extra={"format": {"zh-cn": ""}, "tags": []},
+    )
+    buffs: buff = Field(
+        default=None,
+        title="死门buffID",
+        description="死门buffID",
+        json_schema_extra={"format": {"zh-cn": ""}, "tags": []},
+    )
+    recovery_buffs: buff = Field(
+        default=None,
+        title="死门恢复buffID",
+        description="死门恢复buffID",
+        json_schema_extra={"format": {"zh-cn": ""}, "tags": []},
+    )
+    recovery_heart_attack_buffs: buff = Field(
+        default=None,
+        title="死门死buff亡ID",
+        description="死门死亡buffID",
+        json_schema_extra={"format": {"zh-cn": ""}, "tags": []},
+    )
+
+
+class hp_reaction(BaseModel):
+    hp_ratio: float = Field(
+        default=None,
+        title="血量比例",
+        description="血量比例",
+        json_schema_extra={"format": {"zh-cn": ""}, "tags": []},
+    )
+    is_under: bool = Field(
+        default=None,
+        title="是否低于时生效",
+        description="是否低于时生效",
+        json_schema_extra={"format": {"zh-cn": ""}, "tags": []},
+    )
+    effects: list[effect_type.effect] = Field(
+        default=None,
+        title="effectID",
+        description="effectID",
+        json_schema_extra={"format": {"zh-cn": ""}, "tags": []},
+    )
+
+
+class death_reaction(BaseModel):
+    target_allies: bool = Field(
+        default=None,
+        title="是否目标盟友",
+        description="是否目标盟友",
+        json_schema_extra={"format": {"zh-cn": ""}, "tags": []},
+    )
+    target_enemies: bool = Field(
+        default=None,
+        title="是否目标敌人",
+        description="是否目标敌人",
+        json_schema_extra={"format": {"zh-cn": ""}, "tags": []},
+    )
+    effects: list[effect_type.effect] = Field(
+        default=None,
+        title="effectID",
+        description="effectID",
+        json_schema_extra={"format": {"zh-cn": ""}, "tags": []},
+    )
+
+
+class controlled(BaseModel):
+    target_rank: int = Field(
+        default=None,
+        title="目标优先级",
+        description="目标优先级",
+        json_schema_extra={"format": {"zh-cn": ""}, "tags": []},
+    )
+
+
+class id_index(BaseModel):
+    index: int = Field(
+        default=None,
+        title="索引",
+        description="索引",
+        json_schema_extra={"format": {"zh-cn": ""}, "tags": []},
+    )
+
+
+class extra_battle_loot(BaseModel):
+    code: loot = Field(
+        default=None,
+        title="Code",
+        description="Code",
+        json_schema_extra={"format": {"zh-cn": ""}, "tags": []},
+    )
+    count: int = Field(
+        default=None,
+        title="数量",
+        description="数量",
+        json_schema_extra={"format": {"zh-cn": ""}, "tags": []},
+    )
+
+
+class skill_selection(BaseModel):
+    can_select_combat_skills: bool = Field(
+        default=None,
+        title="是否可选战斗技能",
+        description="是否可选战斗技能",
+        json_schema_extra={"format": {"zh-cn": ""}, "tags": []},
+    )
+    number_of_selected_combat_skills_max: int = Field(
+        default=None,
+        title="最大可选战斗技能数量",
+        description="最大可选战斗技能数量",
+        json_schema_extra={"format": {"zh-cn": ""}, "tags": []},
+    )
+
+
+class generation(BaseModel):
+    is_generation_enabled: bool = Field(
+        default=None,
+        title="是否生效",
+        description="是否生效",
+        json_schema_extra={"format": {"zh-cn": ""}, "tags": []},
+    )
+    number_of_positive_quirks_min: int = Field(
+        default=None,
+        title="最小正面quirk数量",
+        description="最小正面quirk数量",
+        json_schema_extra={"format": {"zh-cn": ""}, "tags": []},
+    )
+    number_of_positive_quirks_max: int = Field(
+        default=None,
+        title="最大正面quirk数量",
+        description="最大正面quirk数量",
+        json_schema_extra={"format": {"zh-cn": ""}, "tags": []},
+    )
+    number_of_negative_quirks_min: int = Field(
+        default=None,
+        title="最小负面quirk数量",
+        description="最小负面quirk数量",
+        json_schema_extra={"format": {"zh-cn": ""}, "tags": []},
+    )
+    number_of_negative_quirks_max: int = Field(
+        default=None,
+        title="最大负面quirk数量",
+        description="最大负面quirk数量",
+        json_schema_extra={"format": {"zh-cn": ""}, "tags": []},
+    )
+    number_of_class_specific_camping_skills: int = Field(
+        default=None,
+        title="最小类特定camping技能数量",
+        description="最小类特定camping技能数量",
+        json_schema_extra={"format": {"zh-cn": ""}, "tags": []},
+    )
+    number_of_shared_camping_skills: int = Field(
+        default=None,
+        title="共享camping技能数量",
+        description="共享camping技能数量",
+        json_schema_extra={"format": {"zh-cn": ""}, "tags": []},
+    )
+    number_of_random_combat_skills: int = Field(
+        default=None,
+        title="随机战斗技能数量",
+        description="随机战斗技能数量",
+        json_schema_extra={"format": {"zh-cn": ""}, "tags": []},
+    )
+    number_of_cards_in_deck: int = Field(
+        default=None,
+        title="卡牌数量",
+        description="卡牌数量",
+        json_schema_extra={"format": {"zh-cn": ""}, "tags": []},
+    )
+    card_chance: float = Field(
+        default=None,
+        title="卡牌概率",
+        description="卡牌概率",
         json_schema_extra={"format": {"zh-cn": ""}, "tags": []},
     )

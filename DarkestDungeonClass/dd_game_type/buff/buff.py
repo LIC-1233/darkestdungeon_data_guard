@@ -1,4 +1,7 @@
-from pydantic import BaseModel, Field
+from pydantic import Field
+
+from DarkestDungeonClass.dd_game_type.base import BaseModel
+from DarkestDungeonClass.dd_game_type.enum.type_enum import buff_stat_types_enum
 
 
 class buff_stat_types(BaseModel):
@@ -352,4 +355,112 @@ class buff_stat_types(BaseModel):
     )
     riposte_duration_percent: float = Field(
         default=None,
+    )
+
+
+class rule_data_type(BaseModel):
+    value: float = Field(
+        alias="float",
+        default=None,
+        json_schema_extra={"format": {"zh-cn": ""}, "tags": []},
+    )
+    string: str = Field(
+        default=None,
+        json_schema_extra={"format": {"zh-cn": ""}, "tags": []},
+    )
+
+
+class buff(BaseModel):
+    id: str = Field(
+        default=None,
+        title="ID",
+        description="ID",
+        json_schema_extra={"format": {"zh-cn": ""}, "tags": []},
+    )
+    stat_type: buff_stat_types_enum = Field(
+        default=None,
+        title="状态类型",
+        description="状态类型",
+        json_schema_extra={"format": {"zh-cn": ""}, "tags": []},
+    )
+    stat_sub_type: str = Field(
+        default=None,
+        title="状态子类型",
+        description="状态子类型",
+        json_schema_extra={"format": {"zh-cn": ""}, "tags": []},
+    )
+    amount: float = Field(
+        default=None,
+        title="数量",
+        description="数量",
+        json_schema_extra={"format": {"zh-cn": ""}, "tags": []},
+    )
+    duration_type: str = Field(
+        default=None,
+        title="持续类型",
+        description="持续类型",
+        json_schema_extra={"format": {"zh-cn": ""}, "tags": []},
+    )
+    duration: int = Field(
+        default=None,
+        title="持续时间",
+        description="持续时间",
+        json_schema_extra={"format": {"zh-cn": ""}, "tags": []},
+    )
+    remove_if_not_active: bool = Field(
+        default=None,
+        title="不激活时删除",
+        description="不激活时删除",
+        json_schema_extra={"format": {"zh-cn": ""}, "tags": []},
+    )
+    remove_on_battle_complete: bool = Field(
+        default=None,
+        title="战斗结束时删除",
+        description="战斗结束时删除",
+        json_schema_extra={"format": {"zh-cn": ""}, "tags": []},
+    )
+    rule_type: str = Field(
+        default=None,
+        title="规则类型",
+        description="规则类型",
+        json_schema_extra={"format": {"zh-cn": ""}, "tags": []},
+    )
+    is_false_rule: bool = Field(
+        default=None,
+        title="是否为反选",
+        description="是否为反选",
+        json_schema_extra={"format": {"zh-cn": ""}, "tags": []},
+    )
+    rule_data: rule_data_type = Field(
+        default=None,
+        title="规则数据",
+        description="规则数据",
+        json_schema_extra={"format": {"zh-cn": ""}, "tags": []},
+    )
+    is_clear_debuff_valid: bool = Field(
+        default=None,
+        title="是否为清除Debuff",
+        description="是否为清除Debuff",
+        json_schema_extra={"format": {"zh-cn": ""}, "tags": []},
+    )
+    has_description: bool = Field(
+        default=None,
+        title="是否有描述",
+        description="是否有描述",
+        json_schema_extra={"format": {"zh-cn": ""}, "tags": []},
+    )
+    fx: str = Field(
+        default=None,
+        title="特效",
+        description="特效",
+        json_schema_extra={"format": {"zh-cn": ""}, "tags": []},
+    )
+
+
+class buff_table(BaseModel):
+    buffs: list[buff] = Field(
+        default=None,
+        title="buff列表",
+        description="buff列表",
+        json_schema_extra={"format": {"zh-cn": ""}, "tags": []},
     )

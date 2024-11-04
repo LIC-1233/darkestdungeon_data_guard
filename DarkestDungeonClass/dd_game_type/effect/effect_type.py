@@ -1,7 +1,8 @@
 from typing import Optional
 
-from pydantic import BaseModel, Field
+from pydantic import Field
 
+from DarkestDungeonClass.dd_game_type.base import BaseModel
 from DarkestDungeonClass.dd_game_type.enum.type_enum import (
     buff_duration_type_enum,
     buff_sources_enum,
