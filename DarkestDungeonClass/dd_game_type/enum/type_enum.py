@@ -1,6 +1,6 @@
 from typing import Literal
 
-target_enum = Literal[
+effect_target_enum = Literal[
     "performer",
     "performer_group",
     "performer_group_other",
@@ -10,7 +10,7 @@ target_enum = Literal[
     "target_enemy_group",
     "global",
 ]
-curio_result_type_enum = Literal["positive", "negative", "neutral", "none"]
+effect_curio_result_type_enum = Literal["positive", "negative", "neutral", "none"]
 keyState_enum = Literal[
     "tagged",
     "poisoned",
@@ -111,7 +111,43 @@ buff_stat_types_enum = Literal[
     "buff_duration_percent",
     "riposte_duration_percent",
 ]
-buff_sources_enum = Literal["bsrc_skill","bsrc_notspecified","bsrc_affliction","bsrc_virtue","bsrc_item","bsrc_curio","bsrc_disease","bsrc_riposte","bsrc_campingskill","bsrc_quirk","bsrc_trinket","bsrc_trinket_set","bsrc_instantSkill","bsrc_guard","bsrc_deathsdoor","bsrc_deathsdoor_recovery","bsrc_deathsdoor_recovery_heart_attack","bsrc_quest_failure","bsrc_companion","bsrc_stun","bsrc_town","bsrc_district","bsrc_torchsettings","bsrc_crit","bsrc_trinket_additional_effect","bsrc_battle_modifier","bsrc_never_again","bsrc_vampire","bsrc_town_event","bsrc_flashback_start","bsrc_flashback_result","bsrc_completed_darkest_dungeon_quest_party_hero","bsrc_last_hero","bsrc_quest_modifier","combat_end"]
+buff_sources_enum = Literal[
+    "bsrc_skill",
+    "bsrc_notspecified",
+    "bsrc_affliction",
+    "bsrc_virtue",
+    "bsrc_item",
+    "bsrc_curio",
+    "bsrc_disease",
+    "bsrc_riposte",
+    "bsrc_campingskill",
+    "bsrc_quirk",
+    "bsrc_trinket",
+    "bsrc_trinket_set",
+    "bsrc_instantSkill",
+    "bsrc_guard",
+    "bsrc_deathsdoor",
+    "bsrc_deathsdoor_recovery",
+    "bsrc_deathsdoor_recovery_heart_attack",
+    "bsrc_quest_failure",
+    "bsrc_companion",
+    "bsrc_stun",
+    "bsrc_town",
+    "bsrc_district",
+    "bsrc_torchsettings",
+    "bsrc_crit",
+    "bsrc_trinket_additional_effect",
+    "bsrc_battle_modifier",
+    "bsrc_never_again",
+    "bsrc_vampire",
+    "bsrc_town_event",
+    "bsrc_flashback_start",
+    "bsrc_flashback_result",
+    "bsrc_completed_darkest_dungeon_quest_party_hero",
+    "bsrc_last_hero",
+    "bsrc_quest_modifier",
+    "combat_end",
+]
 source_heal_type_enum = Literal[
     "damage_heal",
     "flashback",
