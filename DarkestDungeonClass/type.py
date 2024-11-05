@@ -10,6 +10,30 @@ from DarkestDungeonClass.dd_game_type.effect.effect import effect
 from DarkestDungeonClass.dd_game_type.enum.type_enum import (
     int_bool_enum,
 )
+from DarkestDungeonClass.dd_game_type.hero.hero import heroes_info
+
+# from DarkestDungeonClass.dd_game_type.hero.info import (
+#     activity_modifier,
+#     armour,
+#     combat_skill,
+#     controlled,
+#     crit,
+#     death_reaction,
+#     deaths_door,
+#     extra_battle_loot,
+#     extra_curio_loot,
+#     generation,
+#     hp_reaction,
+#     id_index,
+#     incompatible_party_member,
+#     mode,
+#     overstressed_modifier,
+#     quirk_modifier,
+#     resistances,
+#     skill_selection,
+#     tag,
+#     weapon,
+# )
 from DarkestDungeonClass.util import darkest
 
 logger = logging.getLogger()
@@ -18,22 +42,50 @@ logger = logging.getLogger()
 class data_manager:
     def __init__(self):
         self.effect_id_entries: dict[str, list[effect]] = defaultdict(list)
-        self.pk_type = {"effect": effect}
-        self.pk_id_entries: dict[
-            Literal["effect", "resistances"], dict[str, list[effect]]
-        ] = defaultdict(lambda: defaultdict(list))
+        # self.pk_type = heroes_info.__annotations__
+        # self.pk_type = {
+        #     "effect": effect,
+        #     "resistances": resistances,
+        #     "crit": crit,
+        #     "weapon": weapon,
+        #     "armour": armour,
+        #     "combat_skill": combat_skill,
+        #     "riposte_skill": combat_skill,
+        #     "combat_move_skill": combat_skill,
+        #     "tag": tag,
+        #     "mode": mode,
+        #     "overstressed_modifier": overstressed_modifier,
+        #     "quirk_modifier": quirk_modifier,
+        #     "activity_modifier": activity_modifier,
+        #     "incompatible_party_member": incompatible_party_member,
+        #     "deaths_door": deaths_door,
+        #     "hp_reaction": hp_reaction,
+        #     "death_reaction": death_reaction,
+        #     "controlled": controlled,
+        #     "id_index": id_index,
+        #     "extra_battle_loot": extra_battle_loot,
+        #     "extra_curio_loot": extra_curio_loot,
+        #     "skill_selection": skill_selection,
+        #     "generation": generation,
+        # }
+        self.pk_id_entries: dict[str, list[BaseModel]] = defaultdict(list)
         self._pk_class: dict[str, type[BaseModel]] = {}
         self._keys_to_type: dict[tuple[str, str], tuple[bool, type]] = {}
 
         self.init()
 
     def init(self):
-        self._pk_class = {"effect": effect}
-
+        for p_k, cls in heroes_info.__annotations__.items():
+            if get_origin(cls) is list:
+                self._pk_class[p_k] = get_args(cls)[0]
+            else:
+                self._pk_class[p_k] = cls
         self.init_keys_to_type()
 
     def init_keys_to_type(self):
         for p_k, cls in self._pk_class.items():
+            if get_origin(cls) is list:
+                cls = get_args(cls)[0]
             for s_k, info in cls.model_fields.items():
                 is_list = False
                 s_ks = [s_k]
@@ -43,10 +95,22 @@ class data_manager:
                     return None
                 annotation = info.annotation
                 if get_origin(annotation) is Union:
-                    annotation = get_args(annotation)[0]
+                    # annotation = get_args(annotation)[0]
+                    annotation = [
+                        i
+                        for i in get_args(annotation)
+                        if i in ["str", "int", "float", "bool"]
+                    ][0]
+                    print(annotation)
                     if get_origin(annotation) is list:
                         is_list = True
-                        annotation = get_args(annotation)[0]
+                        # annotation = get_args(annotation)[0]
+                        annotation = [
+                            i
+                            for i in get_args(annotation)
+                            if i in ["str", "int", "float", "bool"]
+                        ][0]
+                        print(annotation)
                 if get_origin(annotation) is Literal:
                     annotation = get_args(annotation)[0].__class__
                 for s_k in s_ks:
@@ -121,12 +185,12 @@ class data_manager:
                 continue
             p_k, p_entery, pasering_str, start_line, end_line = darkest_parser_result
             try:
-                if p_k in self.pk_id_entries:
-                    e = self.pk_type[p_k](**p_entery)  # type: ignore
-                    self.pk_id_entries[p_k][e.name].append(e)
-                if p_k == "effect":
-                    e = effect(**p_entery)  # type: ignore
-                    self.pk_id_entries["effect"][e.name].append(e)
+                if p_k in self._pk_class.keys():
+                    e = self._pk_class[p_k](**p_entery)  # type: ignore
+                    self.pk_id_entries[p_k].append(e)
+                # if p_k == "effect":
+                #     e = effect(**p_entery)  # type: ignore
+                #     self.pk_id_entries["effect"][e.name].append(e)
                 else:
                     logger.info(f"未知表名: {p_k}\n\n\n" + "-" * 25)
                     # raise TypeError(f"unexpected p_k: {p_k}\n\n\n")

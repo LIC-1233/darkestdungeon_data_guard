@@ -638,6 +638,21 @@ class extra_battle_loot(BaseModel):
     )
 
 
+class extra_curio_loot(BaseModel):
+    code: loot | str = Field(
+        default=None,
+        title="Code",
+        description="Code",
+        json_schema_extra={"format": {"zh-cn": ""}, "tags": []},
+    )
+    count: int = Field(
+        default=None,
+        title="数量",
+        description="数量",
+        json_schema_extra={"format": {"zh-cn": ""}, "tags": []},
+    )
+
+
 class skill_selection(BaseModel):
     can_select_combat_skills: bool = Field(
         default=None,

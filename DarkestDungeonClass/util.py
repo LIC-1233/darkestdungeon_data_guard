@@ -237,7 +237,12 @@ class darkest:
             ):
                 logger.debug(current_s_value_str)
                 # current_s_value= [type_check(i) for item in re.findall(pattern_t, current_s_value_str) for i in item if i]
-                current_s_value_raw = [i for item in re.findall(pattern_t, current_s_value_str) for i in item if i]
+                current_s_value_raw = [
+                    i
+                    for item in re.findall(pattern_t, current_s_value_str)
+                    for i in item
+                    if i
+                ]
                 current_s_value = type_check(
                     current_p_key,
                     current_s_key,
@@ -279,7 +284,12 @@ class darkest:
                 pattern_s, current_p_value_str + "\n"
             ):
                 logger.debug(current_s_value_str)
-                current_s_value_raw = [i for item in re.findall(pattern_t, current_s_value_str) for i in item if i and i != "."]
+                current_s_value_raw = [
+                    i
+                    for item in re.findall(pattern_t, current_s_value_str)
+                    for i in item
+                    if i and i != "."
+                ]
                 try:
                     current_s_value = type_check(
                         current_p_key,
@@ -287,10 +297,17 @@ class darkest:
                         current_s_value_raw,
                     )
                 except Exception as e:
-                    yield ValueError(f"{current_p_key} 解析错误, 位于 {start_line}-{end_line} 行, 错误文本内容: \n\n{current_p_value_str.strip()}\n\n{e}")
+                    yield ValueError(
+                        f"{current_p_key} 解析错误, 位于 {start_line}-{end_line} 行, 错误文本内容: \n\n{current_p_value_str.strip()}\n\n{e}"
+                    )
                     continue
                 logger.debug(current_s_key, current_s_value)
                 current_p_value[current_s_key] = current_s_value
-            yield (current_p_key,current_p_value,current_p_value_str,start_line,end_line)
+            yield (
+                current_p_key,
+                current_p_value,
+                current_p_value_str,
+                start_line,
+                end_line,
+            )
         yield None
-        
