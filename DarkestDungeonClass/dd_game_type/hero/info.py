@@ -2,7 +2,7 @@ from pydantic import Field, ValidationError
 
 from DarkestDungeonClass.dd_game_type.base import BaseModel
 from DarkestDungeonClass.dd_game_type.buff.buff import buff
-from DarkestDungeonClass.dd_game_type.effect import effect_type
+from DarkestDungeonClass.dd_game_type.effect.effect import effect as effect_type
 from DarkestDungeonClass.dd_game_type.loot.loot import loot
 from DarkestDungeonClass.dd_game_type.trait.trait import trait
 
@@ -67,7 +67,7 @@ class resistances(BaseModel):
 
 
 class crit(BaseModel):
-    effects: list[effect_type.effect] = Field(
+    effects: list[effect_type | str] = Field(
         default=None,
         title="暴击效果",
         description="暴击效果",
@@ -324,7 +324,7 @@ class combat_skill(BaseModel):
         description="是否暴击",
         json_schema_extra={"format": {"zh-cn": ""}, "tags": []},
     )
-    effect: list[effect_type.effect] = Field(
+    effect: list[effect_type | str] = Field(
         default=None,
         title="技能效果",
         description="技能效果",
@@ -489,7 +489,7 @@ class mode(BaseModel):
 
 
 class overstressed_modifier(BaseModel):
-    override_trait_type_ids: list[trait] = Field(
+    override_trait_type_ids: list[trait | str] = Field(
         default=None,
         title="爆压traitID",
         description="爆压traitID",
@@ -537,7 +537,7 @@ class incompatible_party_member(BaseModel):
 
 
 class deaths_door(BaseModel):
-    enter_effects: list[effect_type.effect] = Field(
+    enter_effects: list[effect_type | str] = Field(
         default=None,
         title="死门入effectID",
         description="死门入effectID",
@@ -549,13 +549,13 @@ class deaths_door(BaseModel):
         description="死门buffID",
         json_schema_extra={"format": {"zh-cn": ""}, "tags": []},
     )
-    recovery_buffs: buff = Field(
+    recovery_buffs: buff | str = Field(
         default=None,
         title="死门恢复buffID",
         description="死门恢复buffID",
         json_schema_extra={"format": {"zh-cn": ""}, "tags": []},
     )
-    recovery_heart_attack_buffs: buff = Field(
+    recovery_heart_attack_buffs: buff | str = Field(
         default=None,
         title="死门死buff亡ID",
         description="死门死亡buffID",
@@ -576,7 +576,7 @@ class hp_reaction(BaseModel):
         description="是否低于时生效",
         json_schema_extra={"format": {"zh-cn": ""}, "tags": []},
     )
-    effects: list[effect_type.effect] = Field(
+    effects: list[effect_type | str] = Field(
         default=None,
         title="effectID",
         description="effectID",
@@ -597,7 +597,7 @@ class death_reaction(BaseModel):
         description="是否目标敌人",
         json_schema_extra={"format": {"zh-cn": ""}, "tags": []},
     )
-    effects: list[effect_type.effect] = Field(
+    effects: list[effect_type | str] = Field(
         default=None,
         title="effectID",
         description="effectID",
@@ -624,7 +624,7 @@ class id_index(BaseModel):
 
 
 class extra_battle_loot(BaseModel):
-    code: loot = Field(
+    code: loot | str = Field(
         default=None,
         title="Code",
         description="Code",

@@ -5,13 +5,15 @@ from DarkestDungeonClass.dd_game_type.buff.buff import buff_table
 files = set(
     [
         i
-        for i in Path(r"D:\programfiles\steam\steamapps\common\DarkestDungeon").rglob(
+        for i in Path(r"E:\SteamLibrary\steamapps\common\DarkestDungeon").rglob(
             r"buffs/*.json"
         )
         if "network" not in i.name and "mods" not in str(i)
     ]
 )
-# files |= set(Path(r"D:\Game\MO2_darkestdungeon\mods").rglob(r"buffs/*.json"))
+files |= set(
+    Path(r"D:\Program Files\MO2\Game\DarkestDunGeon\mods").rglob(r"buffs/*.json")
+)
 for i in files:
     print(i)
     try:

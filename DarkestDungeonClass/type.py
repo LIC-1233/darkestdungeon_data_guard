@@ -1,11 +1,12 @@
 import logging
+from collections import defaultdict
 from pathlib import Path
 from types import UnionType
 from typing import Literal, Union, get_args, get_origin
 
 from pydantic import BaseModel, ValidationError
 
-from DarkestDungeonClass.dd_game_type.effect.effect_type import effect
+from DarkestDungeonClass.dd_game_type.effect.effect import effect
 from DarkestDungeonClass.dd_game_type.enum.type_enum import (
     int_bool_enum,
 )
@@ -16,7 +17,11 @@ logger = logging.getLogger()
 
 class data_manager:
     def __init__(self):
-        self.effect_id_entries: dict[str, effect] = {}
+        self.effect_id_entries: dict[str, list[effect]] = defaultdict(list)
+        self.pk_type = {"effect": effect}
+        self.pk_id_entries: dict[
+            Literal["effect", "resistances"], dict[str, list[effect]]
+        ] = defaultdict(lambda: defaultdict(list))
         self._pk_class: dict[str, type[BaseModel]] = {}
         self._keys_to_type: dict[tuple[str, str], tuple[bool, type]] = {}
 
@@ -116,9 +121,12 @@ class data_manager:
                 continue
             p_k, p_entery, pasering_str, start_line, end_line = darkest_parser_result
             try:
+                if p_k in self.pk_id_entries:
+                    e = self.pk_type[p_k](**p_entery)  # type: ignore
+                    self.pk_id_entries[p_k][e.name].append(e)
                 if p_k == "effect":
                     e = effect(**p_entery)  # type: ignore
-                    self.effect_id_entries[e.name] = e
+                    self.pk_id_entries["effect"][e.name].append(e)
                 else:
                     logger.info(f"未知表名: {p_k}\n\n\n" + "-" * 25)
                     # raise TypeError(f"unexpected p_k: {p_k}\n\n\n")

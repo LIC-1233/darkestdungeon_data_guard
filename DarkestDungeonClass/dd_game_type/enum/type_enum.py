@@ -1,5 +1,39 @@
 from typing import Literal
 
+type_file_regex: dict[str, list[str]] = {
+    "buff": [
+        "shared/buffs/*.json",
+        "dlc/*/shared/buffs/*.json",
+        "dlc/*/features/*/shared/buffs/*.json",
+    ],
+    "loot": [
+        "loot/*.json",
+        "dlc/*/loot/*.json",
+        "dlc/*/features/*/loot/*.json",
+    ],
+    "trait": [
+        "shared/trait/*.json",
+        "dlc/*/shared/trait/*.json",
+        "dlc/*/features/*/shared/trait/*.json",
+    ],
+    "effect": [
+        "effects/*.darkest",
+        "modes/*/effects/*.darkest",
+        "dlc/*/effects/*.darkest",
+        "dlc/*/modes/*/effects/*.darkest",
+        "dlc/*/features/*/effects/*.darkest",
+        "dlc/*/features/*/modes/*/effects/*.darkest",
+    ],
+    "hero_info": [
+        "heroes/*/*info.darkest",
+        "heroes/*/*override.darkest",
+        "dlc/*/heroes/*/*info.darkest",
+        "dlc/*/heroes/*/*override.darkest",
+        "dlc/*/features/*/heroes/*/*info.darkest",
+        "dlc/*/features/*/heroes/*/*override.darkest",
+    ],
+}
+
 effect_target_enum = Literal[
     "performer",
     "performer_group",

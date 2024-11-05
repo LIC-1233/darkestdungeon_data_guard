@@ -2,7 +2,7 @@ from pydantic import Field
 
 from DarkestDungeonClass.dd_game_type.base import BaseModel
 from DarkestDungeonClass.dd_game_type.buff.buff import buff
-from DarkestDungeonClass.dd_game_type.effect import effect_type
+from DarkestDungeonClass.dd_game_type.effect.effect import effect as effect_type
 
 
 class combat_start_turn_act_outs_data_type(BaseModel):
@@ -18,13 +18,11 @@ class combat_start_turn_act_outs_data_type(BaseModel):
         description="字符串",
         json_schema_extra={"format": {"zh-cn": ""}, "tags": []},
     )
-    effect: str | effect_type.effect = (
-        Field(  # TODO 可能是非法 原版没有这个，mod幻术师有这个
-            default=None,
-            title="效果",
-            description="效果",
-            json_schema_extra={"format": {"zh-cn": ""}, "tags": []},
-        )
+    effect: str | effect_type = Field(  # TODO 可能是非法 原版没有这个，mod幻术师有这个
+        default=None,
+        title="效果",
+        description="效果",
+        json_schema_extra={"format": {"zh-cn": ""}, "tags": []},
     )
 
 
@@ -64,7 +62,7 @@ class combat_start_turn_act_outs_type(BaseModel):
 
 
 class reaction_act_outs_data_type(BaseModel):
-    effect: str | effect_type.effect = Field(
+    effect: str | effect_type = Field(
         default=None,
         title="效果",
         description="效果",
