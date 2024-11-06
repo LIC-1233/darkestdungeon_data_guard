@@ -438,7 +438,7 @@ class combat_skill(BaseModel):
         description="是否刷新每波",
         json_schema_extra={"format": {"zh-cn": ""}, "tags": []},
     )
-    damage_heal_base_class_ids: list[int] = Field(
+    damage_heal_base_class_ids: list[str] = Field(
         default=None,
         title="伤害治疗基类ID",
         description="伤害治疗基类ID",
@@ -474,7 +474,7 @@ class mode(BaseModel):
         description="是否默认",
         json_schema_extra={"format": {"zh-cn": ""}, "tags": []},
     )
-    battle_complete_combat_skill_id: combat_skill = Field(
+    battle_complete_combat_skill_id: combat_skill | str = Field(
         default=None,
         title="战斗完成时战斗技能ID",
         description="战斗完成时战斗技能ID",
@@ -543,19 +543,19 @@ class deaths_door(BaseModel):
         description="死门入effectID",
         json_schema_extra={"format": {"zh-cn": ""}, "tags": []},
     )
-    buffs: buff = Field(
+    buffs: list[buff | str] = Field(
         default=None,
         title="死门buffID",
         description="死门buffID",
         json_schema_extra={"format": {"zh-cn": ""}, "tags": []},
     )
-    recovery_buffs: buff | str = Field(
+    recovery_buffs: list[buff | str] = Field(
         default=None,
         title="死门恢复buffID",
         description="死门恢复buffID",
         json_schema_extra={"format": {"zh-cn": ""}, "tags": []},
     )
-    recovery_heart_attack_buffs: buff | str = Field(
+    recovery_heart_attack_buffs: list[buff | str] = Field(
         default=None,
         title="死门死buff亡ID",
         description="死门死亡buffID",

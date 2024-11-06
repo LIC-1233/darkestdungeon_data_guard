@@ -1,313 +1,71 @@
-import logging
 import re
-from collections import defaultdict
-from typing import Callable
-
-logger = logging.getLogger()
-
-
-class util:
-    def __init__(self):
-        pass
-
-    @staticmethod
-    def is_number_and_percent_str(s: str):
-        for char in s:
-            if not (char.isdigit() or char == "%"):
-                return False
-        return True
-
-    @staticmethod
-    def real_int(string: str):
-        try:
-            int(string)
-            return True
-        except Exception:
-            return False
-
-    @staticmethod
-    def real_float(string: str):
-        try:
-            float(string)
-            return True
-        except Exception:
-            return False
-
-    @staticmethod
-    def get_data_from_str(
-        current_p_key: str, current_s_key: str, datas: list[str]
-    ) -> list[str | float | int | bool] | str | float | int | bool:
-        result: list[str | float | int | bool] = []
-        for data in datas:
-            if (data[0] == '"' and data[-1] == '"') or (
-                data[0] == "'" and data[-1] == "'"
-            ):
-                result.append(data[1:-1])
-            elif data[-1] == "%":
-                precent_count = data.count("%")
-                result.append(float(data[:-precent_count]) / 100 * precent_count)
-            elif data.lower() == "true":
-                result.append(True)
-            elif data.lower() == "false":
-                result.append(False)
-            elif util.real_int(data):
-                result.append(int(data))
-            elif util.real_float(data):
-                result.append(float(data))
-            else:
-                result.append(data)
-        if len(result) == 1:
-            return result[0]
-        if result == []:
-            return 1
-        return result
+from pathlib import Path
+from xml.etree import ElementTree as ET
+from xml.etree.ElementTree import Element
 
 
-class darkest:
+class xml_data:
+    mod_title: str
+    mod_versions: list[int]
+    mod_tags: list[str]
+    mod_description: str
+    mod_PublishedFileId: str
+
     def __init__(
         self,
-        data: dict[
-            str,
-            list[dict[str, list[str | bool | int | float] | str | bool | int | float]],
-        ],
-        strict: bool = True,
+        mod_title: str,
+        mod_versions: list[int],
+        mod_tags: list[str],
+        mod_description: str,
+        mod_PublishedFileId: str,
     ):
-        self.data = data
-        self.__strict: bool = strict
+        self.mod_title = mod_title
+        self.mod_versions = mod_versions
+        self.mod_tags = mod_tags
+        self.mod_description = mod_description
+        self.mod_PublishedFileId = mod_PublishedFileId
 
-    def __str__(self) -> str:
-        if self.__strict:
-            content = ""
-            for p_key, p_values in self.data.items():
-                for p_value in p_values:
-                    content += f"{p_key}: "
-                    for s_key, s_values in p_value.items():
-                        content += f".{s_key} "
-                        if isinstance(s_values, list):
-                            for s_value in s_values:
-                                content += f"{s_value} "
-                        else:
-                            content += f"{s_values} "
-                    content += "\n"
-            return content
-        else:
-            content = ""
-            for p_key, p_values in self.data.items():
-                for p_value in p_values:
-                    content += f"{p_key}: "
-                    for s_key, s_values in p_value.items():
-                        content += f".{s_key} "
-                        if not isinstance(s_values, list):
-                            s_values = [s_values]
-                        for s_value in s_values:
-                            if isinstance(s_value, str):
-                                content += f'"{s_value}" '
-                            elif isinstance(s_value, bool):
-                                content += f"{s_value} ".lower()
-                            elif isinstance(s_value, int):
-                                content += f"{s_value} "
-                            elif isinstance(s_value, float):  # type: ignore
-                                content += f"{s_value} "
-                            else:
-                                raise TypeError(
-                                    f"Unsupported type: {type(s_value)}:{s_value}"
-                                )
-                    content += "\n"
-            return content
+    @classmethod
+    def etree_text_iter(cls, tree: Element, name: str):
+        for elem in tree.iter(name):
+            if isinstance(elem.text, str):
+                return elem.text
+        return ""
 
-    @staticmethod
-    def type_check(data: str) -> str | float | int | bool:
-        if (data[0] == '"' and data[-1] == '"') or (data[0] == "'" and data[-1] == "'"):
-            return data[1:-1]
-        elif data[-1] == "%":
-            precent_count = data.count("%")
-            return float(data[:-precent_count]) / 100 * precent_count
-        elif data.lower() == "true":
-            return True
-        elif data.lower() == "false":
-            return False
-        elif util.real_int(data):
-            return int(data)
-        elif util.real_float(data):
-            return float(data)
-        else:
-            return data
-
-    @staticmethod
-    def paser_old(s: str, strict: bool = True):
-        # logger.debug(f"pasering: {s}")
-        pattern = r'(?:"[^"]*"|\S+)'
-        result: dict[
-            str,
-            list[dict[str, list[str | bool | int | float] | str | bool | int | float]],
-        ] = defaultdict(list)
-        current_p_key: str = ""
-        current_p_value: dict[
-            str, list[str | bool | int | float] | str | bool | int | float
-        ] = {}
-        current_s_key: str = ""
-        current_s_value: list[str | bool | int | float] = []
-        content: str = re.sub(r"//.*(\n)", "\\1", s)
-        sections: list[str] = re.findall(pattern, content)
-        for section in sections:
-            if section[-1] == ":":
-                if current_p_key:
-                    if strict:
-                        current_p_value.update({current_s_key: current_s_value})
-                    elif len(current_s_value) == 1:
-                        current_p_value.update({current_s_key: current_s_value[0]})
-                    else:
-                        current_p_value.update({current_s_key: current_s_value})
-                    result[current_p_key].append(current_p_value)
-                current_p_key = section[:-1]
-                current_p_value = {}
-                current_s_key = ""
-                current_s_value = []
-            elif section[0] == "." and not util.is_number_and_percent_str(section[1:]):
-                if current_s_key:
-                    if len(current_s_value) == 1:
-                        current_p_value.update({current_s_key: current_s_value[0]})
-                    else:
-                        current_p_value.update({current_s_key: current_s_value})
-                current_s_key = section[1:]
-                current_s_value = []
-            else:
-                if strict:
-                    current_s_value.append(section)
-                else:
-                    if (section[0] == '"' and section[-1] == '"') or (
-                        section[0] == "'" and section[-1] == "'"
-                    ):
-                        current_s_value.append(section[1:-1])
-                    elif section[-1] == "%":
-                        precent_count = section.count("%")
-                        current_s_value.append(
-                            float(section[:-precent_count]) / 100 * precent_count
-                        )
-                    elif section.lower() == "true":
-                        current_s_value.append(True)
-                    elif section.lower() == "false":
-                        current_s_value.append(False)
-                    elif util.real_int(section):
-                        current_s_value.append(int(section))
-                    elif util.real_float(section):
-                        current_s_value.append(float(section))
-                    else:
-                        current_s_value.append(section)
-        if current_p_key:
-            if strict:
-                current_p_value.update({current_s_key: current_s_value})
-            elif len(current_s_value) == 1:
-                current_p_value.update({current_s_key: current_s_value[0]})
-            else:
-                current_p_value.update({current_s_key: current_s_value})
-            result[current_p_key].append(current_p_value)
-        return darkest(result, strict)
-
-    @staticmethod
-    def paser(
-        s: str,
-        type_check: Callable[
-            [str, str, list[str]],
-            list[str | float | int | bool] | str | float | int | bool,
-        ] = util.get_data_from_str,
-    ):
-        result: dict[
-            str,
-            list[dict[str, list[str | bool | int | float] | str | bool | int | float]],
-        ] = defaultdict(list)
-        pattern_p = r"(\w+: )"
-        pattern_s = r'\.([a-zA-Z_]+)([\d\s"].*?)(?=(?:\.[a-zA-Z_])|\n)'
-        pattern_t = r'\s*(".+?")|\s([^\s]+)|([\d\.]+%*)'
-        s = re.sub(r"//.*(\n)", "\\1", s)
-        p_k_matchs = list(re.finditer(pattern_p, s))
-        for current_p_key, current_p_value_start_pos, current_p_value_end_pos in zip(
-            [i.groups()[0][:-2] for i in p_k_matchs],
-            [i.end() for i in p_k_matchs],
-            [i.start() for i in p_k_matchs[1:]] + [len(s)],
-            strict=True,
-        ):
-            current_p_value_str = s[current_p_value_start_pos:current_p_value_end_pos]
-            logger.debug([current_p_key, current_p_value_str])
-            current_p_value: dict[
-                str, list[str | bool | int | float] | str | bool | int | float
-            ] = {}
-            for current_s_key, current_s_value_str in re.findall(
-                pattern_s, current_p_value_str + "\n"
-            ):
-                logger.debug(current_s_value_str)
-                # current_s_value= [type_check(i) for item in re.findall(pattern_t, current_s_value_str) for i in item if i]
-                current_s_value_raw = [
-                    i
-                    for item in re.findall(pattern_t, current_s_value_str)
-                    for i in item
-                    if i
-                ]
-                current_s_value = type_check(
-                    current_p_key,
-                    current_s_key,
-                    current_s_value_raw,
-                )
-                logger.debug(current_s_key, current_s_value)
-                current_p_value[current_s_key] = current_s_value
-                # current_p_value[current_s_key] = current_s_value[0] if len(current_s_value) == 1 else current_s_value
-            result[current_p_key].append(current_p_value)
-        return darkest(result, False)
-
-    @staticmethod
-    def parser_fast(
-        s: str,
-        type_check: Callable[
-            [str, str, list[str]],
-            list[str | float | int | bool] | str | float | int | bool,
-        ] = util.get_data_from_str,
-    ):
-        pattern_p = r"(\w+: )"
-        pattern_s = r'\.([a-zA-Z_]+)([\d\s"].*?)(?=(?:\.[a-zA-Z_])|\n)'
-        pattern_t = r'\s*(".+?")|\s([^\s]+)|([\d\.]+%*)'
-        s = re.sub(r"//.*(\n)", "\\1", s)
-        p_k_matchs = list(re.finditer(pattern_p, s))
-        for current_p_key, current_p_value_start_pos, current_p_value_end_pos in zip(
-            [i.groups()[0][:-2] for i in p_k_matchs],
-            [i.end() for i in p_k_matchs],
-            [i.start() for i in p_k_matchs[1:]] + [len(s)],
-            strict=True,
-        ):
-            start_line = s[:current_p_value_start_pos].count("\n")
-            end_line = s[:current_p_value_end_pos].count("\n")
-            current_p_value_str = s[current_p_value_start_pos:current_p_value_end_pos]
-            logger.debug([current_p_key, current_p_value_str])
-            current_p_value: dict[
-                str, list[str | bool | int | float] | str | bool | int | float
-            ] = {}
-            for current_s_key, current_s_value_str in re.findall(
-                pattern_s, current_p_value_str + "\n"
-            ):
-                logger.debug(current_s_value_str)
-                current_s_value_raw = [
-                    i
-                    for item in re.findall(pattern_t, current_s_value_str)
-                    for i in item
-                    if i and i != "."
-                ]
-                try:
-                    current_s_value = type_check(
-                        current_p_key,
-                        current_s_key,
-                        current_s_value_raw,
-                    )
-                except Exception as e:
-                    yield ValueError(
-                        f"{current_p_key} 解析错误, 位于 {start_line}-{end_line} 行, 错误文本内容: \n\n{current_p_value_str.strip()}\n\n{e}"
-                    )
-                    continue
-                logger.debug(current_s_key, current_s_value)
-                current_p_value[current_s_key] = current_s_value
-            yield (
-                current_p_key,
-                current_p_value,
-                current_p_value_str,
-                start_line,
-                end_line,
+    @classmethod
+    def mod_xml_parser(cls, xml_file: str | Path):
+        mod_title: str = ""
+        mod_versions: list[int] = [0, 0, 0]
+        mod_tags: list[str] = []
+        mod_description: str = ""
+        mod_PublishedFileId: str = ""
+        tree = ET.parse(xml_file)
+        if not tree:
+            return cls(
+                mod_title, mod_versions, mod_tags, mod_description, mod_PublishedFileId
             )
-        yield None
+        root = tree.getroot()
+        mod_title = cls.etree_text_iter(root, "Title") or mod_title
+        mod_title = re.sub(r'[\/:*?"<>|]', "_", mod_title).strip()
+        mod_versions[0] = int(
+            cls.etree_text_iter(root, "VersionMajor") or mod_versions[0]
+        )
+        mod_versions[1] = int(
+            cls.etree_text_iter(root, "VersionMinor") or mod_versions[1]
+        )
+        mod_versions[2] = int(
+            cls.etree_text_iter(root, "TargetBuild") or mod_versions[2]
+        )
+        mod_description = (
+            cls.etree_text_iter(root, "ItemDescription") or mod_description
+        )
+        mod_PublishedFileId = (
+            cls.etree_text_iter(root, "PublishedFileId") or mod_PublishedFileId
+        )
+        for Tags in root.iter("Tags"):
+            if not isinstance(Tags.text, str) or not Tags.text.strip():
+                continue
+            mod_tags.append(Tags.text)
+        return cls(
+            mod_title, mod_versions, mod_tags, mod_description, mod_PublishedFileId
+        )
