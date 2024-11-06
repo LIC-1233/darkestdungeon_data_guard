@@ -172,7 +172,3 @@ class trait(BaseModel):
         description="是否校验号叫动作",
         json_schema_extra={"format": {"zh-cn": ""}, "tags": []},
     )
-
-
-class trait_table(BaseModel):
-    traits: list[trait]

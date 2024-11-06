@@ -149,7 +149,7 @@ class darkness_bonuses_data_type(BaseModel):
     )
 
 
-class darkness_bonuses_type(BaseModel):
+class darkness_bonuses(BaseModel):
     key: str = Field(
         default=None,
         title="ID",
@@ -160,20 +160,5 @@ class darkness_bonuses_type(BaseModel):
         default=None,
         title="数据",
         description="数据",
-        json_schema_extra={"format": {"zh-cn": ""}, "tags": []},
-    )
-
-
-class loot_tables(BaseModel):
-    loot_tables: list[loot] = Field(
-        default=None,
-        title="战利品表",
-        description="战利品表",
-        json_schema_extra={"format": {"zh-cn": ""}, "tags": []},
-    )
-    darkness_bonuses: list[darkness_bonuses_type] = Field(
-        default=None,
-        title="暗黑增益",
-        description="暗黑增益",
         json_schema_extra={"format": {"zh-cn": ""}, "tags": []},
     )

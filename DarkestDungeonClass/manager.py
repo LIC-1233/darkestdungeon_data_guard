@@ -3,9 +3,9 @@ from typing import Callable
 
 from DarkestDungeonClass.darkest import file_parser
 from DarkestDungeonClass.dd_game_type.base import BaseModel
-from DarkestDungeonClass.dd_game_type.buff.buff import buff
-from DarkestDungeonClass.dd_game_type.loot.loot import loot
-from DarkestDungeonClass.dd_game_type.trait.trait import trait
+from DarkestDungeonClass.dd_game_type.file.buff import buff_file
+from DarkestDungeonClass.dd_game_type.file.loot import loot_file
+from DarkestDungeonClass.dd_game_type.file.trait import trait_file
 from DarkestDungeonClass.util import xml_data
 
 
@@ -36,17 +36,17 @@ class mod:
 
     def file_init(self):
         self.dataModel_regexFile = {
-            buff.model_validate_json: [
+            buff_file.model_validate_json: [
                 "shared/buffs/*.json",
                 "dlc/*/shared/buffs/*.json",
                 "dlc/*/features/*/shared/buffs/*.json",
             ],
-            loot.model_validate_json: [
+            loot_file.model_validate_json: [
                 "loot/*.json",
                 "dlc/*/loot/*.json",
                 "dlc/*/features/*/loot/*.json",
             ],
-            trait.model_validate_json: [
+            trait_file.model_validate_json: [
                 "shared/trait/*.json",
                 "dlc/*/shared/trait/*.json",
                 "dlc/*/features/*/shared/trait/*.json",
@@ -71,15 +71,14 @@ class mod:
 
         for k, v in self.dataModel_regexFile.items():
             for i in v:
-                for file in self.mod_path.glob(i):
-                    if file.name.endswith(".json"):
+                if i.endswith("*.json"):
+                    for file in self.mod_path.glob(i):
                         self.data_map[file] = k(
                             file.read_text(encoding="utf-8", errors="ignore")
                         )
-                    if file.name.endswith(".darkest"):
-                        self.data_map[file] = k(
-                            file.read_text(encoding="utf-8", errors="ignore")
-                        )  # TODO
+                if i.endswith("*.darkest"):
+                    for file in self.mod_path.glob(i):
+                        self.data_map[file] = k(str(file.absolute()))
 
 
 class mod_manager:

@@ -17,14 +17,12 @@ from DarkestDungeonClass.dd_game_type.enum.type_enum import (
 
 class effect(BaseModel):
     name: str = Field(
-        default=None,
         title="effect id",
         description="effect的唯一标识符",
         examples=["Manacles Stun 1"],
         json_schema_extra={"format": {"zh-cn": ""}, "tags": []},
     )
     target: effect_target_enum = Field(
-        default=None,
         title="目标",
         description="effect的目标",
         examples=[
@@ -74,35 +72,35 @@ class effect(BaseModel):
         examples=[True, False],
         json_schema_extra={"format": {"zh-cn": ""}, "tags": []},
     )
-    dotBleed: int = Field(
+    dotBleed: float = Field(
         default=None,
         title="流血量",
         description="effect的流血量",
         examples=[1, 2, 3],
         json_schema_extra={"format": {"zh-cn": ""}, "tags": []},
     )
-    dotPoison: int = Field(
+    dotPoison: float = Field(
         default=None,
         title="腐蚀量",
         description="effect的腐蚀量",
         examples=[1, 2, 3],
         json_schema_extra={"format": {"zh-cn": ""}, "tags": []},
     )
-    dotStress: int = Field(
+    dotStress: float = Field(
         default=None,
         title="持续加压量",
         description="effect的持续加压量",
         examples=[1, 2, 3],
         json_schema_extra={"format": {"zh-cn": ""}, "tags": []},
     )
-    stress: int = Field(
+    stress: float = Field(
         default=None,
         title="加压量",
         description="effect的加压量",
         examples=[1, 2, 3],
         json_schema_extra={"format": {"zh-cn": ""}, "tags": []},
     )
-    healstress: int = Field(
+    healstress: float = Field(
         default=None,
         title="减压量",
         description="effect的减压量",
@@ -112,8 +110,15 @@ class effect(BaseModel):
     combat_stat_buff: int_bool_enum = Field(
         default=None,
         title="修改属性",
-        description="effect能否修改属性",
-        examples=[True, False],
+        description="effect能否buff属性",
+        examples=[1, 0],
+        json_schema_extra={"format": {"zh-cn": ""}, "tags": []},
+    )
+    debuffenemy: int_bool_enum = Field(
+        default=None,
+        title="debuff属性",
+        description="effect能否debuff属性",
+        examples=[1, 0],
         json_schema_extra={"format": {"zh-cn": ""}, "tags": []},
     )
     damage_low_multiply: float = Field(
@@ -123,7 +128,7 @@ class effect(BaseModel):
         examples=[0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0],
         json_schema_extra={"format": {"zh-cn": ""}, "tags": []},
     )
-    damage_low_add: int = Field(
+    damage_low_add: float = Field(
         default=None,
         title="伤害下限叠加",
         description="effect的伤害下限叠加",
@@ -137,7 +142,7 @@ class effect(BaseModel):
         examples=[0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0],
         json_schema_extra={"format": {"zh-cn": ""}, "tags": []},
     )
-    damage_high_add: int = Field(
+    damage_high_add: float = Field(
         default=None,
         title="伤害上限叠加",
         description="effect的伤害上限叠加",
@@ -151,7 +156,7 @@ class effect(BaseModel):
         examples=[0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0],
         json_schema_extra={"format": {"zh-cn": ""}, "tags": []},
     )
-    max_hp_add: int = Field(
+    max_hp_add: float = Field(
         default=None,
         title="最大hp叠加",
         description="effect的最大hp叠加",
@@ -181,6 +186,7 @@ class effect(BaseModel):
     )
     crit_chance_add: float = Field(
         default=None,
+        alias="critical_rating",
         title="暴击率叠加",
         description="effect的暴击率叠加",
         examples=[0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0],
@@ -195,6 +201,7 @@ class effect(BaseModel):
     )
     defense_rating_add: float = Field(
         default=None,
+        alias="defense_rating",
         title="闪避叠加",
         description="effect的闪避叠加，注意这里是百分比",
         examples=[0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0],
@@ -209,6 +216,7 @@ class effect(BaseModel):
     )
     protection_rating_add: float = Field(
         default=None,
+        alias="protection_rating",
         title="护甲叠加",
         description="effect的护甲叠加",
         examples=[0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0],
@@ -223,6 +231,7 @@ class effect(BaseModel):
     )
     speed_rating_add: float = Field(
         default=None,
+        alias="speed_rating",
         title="速度叠加",
         description="effect的速度叠加",
         examples=[0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0],
@@ -235,21 +244,21 @@ class effect(BaseModel):
         examples=["Manacles Stun 1", "Manacles Stun 2"],
         json_schema_extra={"format": {"zh-cn": ""}, "tags": []},
     )
-    duration: int = Field(
+    duration: float = Field(
         default=None,
         title="持续时间",
         description="effect的持续时间",
         examples=[1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
         json_schema_extra={"format": {"zh-cn": ""}, "tags": []},
     )
-    dotHpHeal: int = Field(
+    dotHpHeal: float = Field(
         default=None,
         title="持续治愈量",
         description="effect的持续治愈量",
         examples=[1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
         json_schema_extra={"format": {"zh-cn": ""}, "tags": []},
     )
-    heal: int = Field(
+    heal: float = Field(
         default=None,
         title="治愈量",
         description="effect的治愈量",
@@ -312,10 +321,10 @@ class effect(BaseModel):
         examples=[1, 0],
         json_schema_extra={"format": {"zh-cn": ""}, "tags": []},
     )
-    stun: int_bool_enum = Field(
+    stun: float = Field(
         default=None,
-        title="眩晕",
-        description="effect是否可以眩晕目标",
+        title="眩晕时长",
+        description="effect时长",
         examples=[1, 0],
         json_schema_extra={"format": {"zh-cn": ""}, "tags": []},
     )
@@ -418,19 +427,19 @@ class effect(BaseModel):
     )
     clearguarded: int_bool_enum = Field(
         default=None,
-        title="清除守护",
+        title="清除被守护",
         description="effect是否可以清除目标被守护的状态",
         examples=[1, 0],
         json_schema_extra={"format": {"zh-cn": ""}, "tags": []},
     )
-    torch_decrease: int = Field(
+    torch_decrease: float = Field(
         default=None,
         title="减少火把亮度",
         description="减少火把亮度",
         examples=[1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
         json_schema_extra={"format": {"zh-cn": ""}, "tags": []},
     )
-    torch_increase: int = Field(
+    torch_increase: float = Field(
         default=None,
         title="增加火把亮度",
         description="增加火把亮度",
@@ -458,14 +467,14 @@ class effect(BaseModel):
         examples=[1, 0],
         json_schema_extra={"format": {"zh-cn": ""}, "tags": []},
     )
-    push: int = Field(
+    push: float = Field(
         default=None,
         title="推后目标",
         description="推后目标",
         examples=[1, 2, 3],
         json_schema_extra={"format": {"zh-cn": ""}, "tags": []},
     )
-    pull: int = Field(
+    pull: float = Field(
         default=None,
         title="拉前目标",
         description="拉前目标",
@@ -588,7 +597,7 @@ class effect(BaseModel):
         examples=[1, 0],
         json_schema_extra={"format": {"zh-cn": ""}, "tags": []},
     )
-    control: int = Field(
+    control: float = Field(
         default=None,
         title="控制目标",
         description="控制目标回合数",
@@ -668,13 +677,13 @@ class effect(BaseModel):
         description="召唤限制",
         json_schema_extra={"format": {"zh-cn": ""}, "tags": []},
     )
-    summon_count: int = Field(
+    summon_count: float = Field(
         default=None,
         title="召唤数量",
         description="召唤数量",
         json_schema_extra={"format": {"zh-cn": ""}, "tags": []},
     )
-    summon_erase_data_on_roll: int_bool_enum = Field(
+    summon_erase_data_on_roll: bool = Field(
         default=None,
         title="清除召唤数据",
         description="是否清除召唤数据",
@@ -769,7 +778,7 @@ class effect(BaseModel):
         examples=[1, 0],
         json_schema_extra={"format": {"zh-cn": ""}, "tags": []},
     )
-    initiative_change: int = Field(
+    initiative_change: float = Field(
         default=None,
         title="行动点数变化",
         description="行动点数变化",
@@ -807,7 +816,7 @@ class effect(BaseModel):
         description="actor_dot",
         json_schema_extra={"format": {"zh-cn": ""}, "tags": []},
     )
-    health_damage: int = Field(
+    health_damage: float = Field(
         default=None,
         title="直接伤害",
         description="直接伤害量",
@@ -902,7 +911,7 @@ class effect(BaseModel):
         examples=[1, 0],
         json_schema_extra={"format": {"zh-cn": ""}, "tags": []},
     )
-    health_damage_blocks: int = Field(
+    health_damage_blocks: float = Field(
         default=None,
         title="格挡伤害",
         description="添加格挡伤害次数",
@@ -1045,5 +1054,27 @@ class effect(BaseModel):
         title="解除眩晕",
         description="解除眩晕仅限PVP",
     )
-
-
+    lifedrain: float = Field(
+        default=None,
+        title="生命吸取",
+        description="生命吸取",
+        json_schema_extra={"format": {"zh-cn": ""}, "tags": []},
+    )
+    antihealaoe: int_bool_enum = Field(
+        default=None,
+        title="反治疗AOE",
+        description="反治疗AOE",
+        json_schema_extra={"format": {"zh-cn": ""}, "tags": []},
+    )
+    xform_vampire: int_bool_enum = Field(
+        default=None,
+        title="变成吸血鬼",
+        description="变成吸血鬼",
+        json_schema_extra={"format": {"zh-cn": ""}, "tags": ["special"]},
+    )
+    viscount_feed_corpse: int_bool_enum = Field(
+        default=None,
+        title="子爵吃尸体",
+        description="子爵吃尸体",
+        json_schema_extra={"format": {"zh-cn": ""}, "tags": ["special"]},
+    )

@@ -279,7 +279,7 @@ class darkest:
         ] = util.get_data_from_str,
     ):
         pattern_p = r"(\w+: )"
-        pattern_s = r'\.([a-zA-Z_]+)([\d\s"].*?)(?=(?:\.[a-zA-Z_])|\n)'
+        pattern_s = r'\.([a-zA-Z_]+)([\d\s"].*?)(?=(?:\.[a-zA-Z_])|\n|$)'
         pattern_t = r'\s*(".+?")|\s([^\s]+)|([\d\.]+%*)'
         s = re.sub(r"//.*(\n)", "\\1", s)
         p_k_matchs = list(re.finditer(pattern_p, s))
@@ -378,7 +378,7 @@ class file_parser:
         返回一个元组,第一个元素是是否是列表,第二个元素是类型。
 
         Returns:
-                Tuple[bool, type]: 第一个元素是是否是列表，第二个元素是类型。
+                type: 元素是类型。
         """
         return self._keys_to_type.get((p_key, s_key), None)
 
@@ -404,15 +404,18 @@ class file_parser:
                     for index in range(len(sub_types))
                 ]
             )
-
         else:
             if len(data) > 1:
-                raise ValueError(f"类型错误：元素长度大于 1，{data}")
+                logger.error(f"类型错误：元素长度大于 1，使用第一个元素继续，{data}")
+                return self.type_check(data[0], type)
             elif len(data) == 0:
                 return self.type_check("", type)
             return self.type_check(data[0], type)
 
     def type_check(self, s: str, Vtype: type | UnionType) -> str | float | int | bool:
+        if Vtype is Literal[1, 0]:
+            if s == "":
+                return 0
         if Vtype is str:
             if s == "":
                 return s
@@ -426,6 +429,8 @@ class file_parser:
                 return float(s[:-precent_count]) / 100 * precent_count
             return float(s)
         if Vtype is bool:
+            if s == "":
+                return True
             if s.lower() == "true":
                 return True
             else:

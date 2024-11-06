@@ -183,17 +183,20 @@ buff_sources_enum = Literal[
     "combat_end",
 ]
 source_heal_type_enum = Literal[
-    "damage_heal",
-    "flashback",
-    "monster_skill",
-    "curio",
-    "hero_skill_multi_target",
-    "act_out",
     "hero_skill",
+    "hero_skill_multi_target",
+    "monster_skill",
+    "monster_skill_multi_target",
+    "camp_skill",
+    "camp_skill_multi_target",
     "companion",
     "eat",
-    "camp_skill",
-    "monster_skill_multi_target",
+    "act_out",
+    "damage_heal",
+    "effect",
+    "flashback",
+    "dot",
+    "curio",
 ]
 damage_type_enum = Literal[
     "attack",
