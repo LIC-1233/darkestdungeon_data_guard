@@ -81,7 +81,7 @@ class darkest:
             str,
             list[dict[str, list[str | bool | int | float] | str | bool | int | float]],
         ],
-        strict: bool = True,
+        strict: bool = False,
     ):
         self.data = data
         self.__strict: bool = strict
@@ -439,11 +439,19 @@ class file_parser:
             return int(s)
         if Vtype is int_bool_enum:
             return int(s)
-        if get_origin(Vtype) is Literal or get_origin(Vtype) is UnionType:
+        if get_origin(Vtype) is Literal:
             for i in get_args(Vtype):
                 try:
-                    if self.type_check(s, type(i)) == i:  # type: ignore
+                    if self.type_check(s, type(i)):  # type: ignore
                         return i
+                except Exception:
+                    pass
+            raise TypeError(f"Literal未知类型: {Vtype}")
+        if get_origin(Vtype) is UnionType:
+            for i in get_args(Vtype):
+                try:
+                    if v := self.type_check(s, i):  # type: ignore
+                        return v
                 except Exception:
                     pass
             raise TypeError(f"Literal未知类型: {Vtype}")
