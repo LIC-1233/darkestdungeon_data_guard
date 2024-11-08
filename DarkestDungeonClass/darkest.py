@@ -3,7 +3,7 @@ import re
 from collections import defaultdict
 from pathlib import Path
 from types import UnionType
-from typing import Callable, Literal, get_args, get_origin
+from typing import Callable, Generic, Literal, Type, TypeVar, get_args, get_origin
 
 from pydantic import BaseModel, ValidationError
 
@@ -80,10 +80,19 @@ class darkest:
         data: dict[
             str,
             list[dict[str, list[str | bool | int | float] | str | bool | int | float]],
-        ],
+        ]
+        | BaseModel,
         strict: bool = False,
     ):
-        self.data = data
+        if isinstance(data, BaseModel):
+            self.data: dict[
+                str,
+                list[
+                    dict[str, list[str | bool | int | float] | str | bool | int | float]
+                ],
+            ] = data.model_dump()
+        else:
+            self.data = data
         self.__strict: bool = strict
 
     def __str__(self) -> str:
@@ -108,6 +117,8 @@ class darkest:
                     content += f"{p_key}: "
                     for s_key, s_values in p_value.items():
                         content += f".{s_key} "
+                        if isinstance(s_values, tuple):
+                            s_values = list(s_values)
                         if not isinstance(s_values, list):
                             s_values = [s_values]
                         for s_value in s_values:
@@ -334,10 +345,13 @@ class darkest:
             )
         yield None
 
+T = TypeVar("T", bound=effect_file | heroes_info_file)
 
-class file_parser:
-    def __init__(self, file_type: Literal["hero_info", "effect"]):
-        self.file_type = file_type
+
+class file_parser(Generic[T]):
+    def __init__(self, file_type: Type[T]):
+        self.file_pk_type = {"hero_info": heroes_info_file, "effect": effect_file}
+        self.file_type: type[T] = file_type
 
         self.init()
 
@@ -352,7 +366,7 @@ class file_parser:
         self.init_keys_to_type()
 
     def init_pk_class(self):
-        for p_k, cls in self.file_pk_type[self.file_type].__annotations__.items():
+        for p_k, cls in self.file_type.__annotations__.items():
             if get_origin(cls) is list:
                 self._pk_class[p_k] = get_args(cls)[0]
             else:
@@ -493,11 +507,11 @@ class file_parser:
             ) from e
         return result
 
-    def darkest_paser(self, file_path: str | Path):
+    def darkest_paser(self, file_path: str | Path) -> T:
         self.init()
         s = Path(file_path).read_text(encoding="utf-8", errors="ignore")
         if not s:
-            return self.file_pk_type[self.file_type]()
+            return self.file_type()
         for darkest_parser_result in darkest.parser_fast(s, self.get_data_from_str):
             if not darkest_parser_result:
                 continue
@@ -523,4 +537,4 @@ class file_parser:
                         + "-" * 25
                     )
                     # raise Exception(f"{p_k} 解析错误, 位于 {start_line}-{end_line} 行, 错误文本内容: \n\n{pasering_str.strip()}\n\n{error_info}\n\n\n") from e
-        return self.file_pk_type[self.file_type](**self.pk_id_entries)  # type: ignore
+        return self.file_type(**self.pk_id_entries)  # type: ignore
