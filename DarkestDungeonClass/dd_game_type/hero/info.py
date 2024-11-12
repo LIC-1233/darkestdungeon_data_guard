@@ -7,7 +7,7 @@ from DarkestDungeonClass.dd_game_type.loot.loot import loot
 from DarkestDungeonClass.dd_game_type.trait.trait import trait
 
 
-class resistances(BaseModel):
+class resistances_type(BaseModel):
     stun: float = Field(
         default=None,
         title="眩晕抗性",
@@ -66,7 +66,7 @@ class resistances(BaseModel):
     )
 
 
-class crit(BaseModel):
+class crit_type(BaseModel):
     effects: list[effect_type | str] = Field(
         default=None,
         title="暴击效果",
@@ -75,7 +75,7 @@ class crit(BaseModel):
     )
 
 
-class weapon(BaseModel):
+class weapon_type(BaseModel):
     name: str = Field(
         default=None,
         title="武器名",
@@ -133,7 +133,7 @@ class weapon(BaseModel):
     )
 
 
-class armour(BaseModel):
+class armour_type(BaseModel):
     name: str = Field(
         default=None,
         title="武器名",
@@ -191,7 +191,7 @@ class armour(BaseModel):
     )
 
 
-class combat_skill(BaseModel):
+class combat_skill_type(BaseModel):
     class Config:
         extra = "allow"  # 忽略额外字段
 
@@ -452,7 +452,7 @@ class combat_skill(BaseModel):
     )
 
 
-class tag(BaseModel):
+class tag_type(BaseModel):
     id: str = Field(
         default=None,
         title="标签ID",
@@ -461,7 +461,7 @@ class tag(BaseModel):
     )
 
 
-class mode(BaseModel):
+class mode_type(BaseModel):
     id: str = Field(
         default=None,
         title="模式ID",
@@ -474,7 +474,7 @@ class mode(BaseModel):
         description="是否默认",
         json_schema_extra={"format": {"zh-cn": ""}, "tags": []},
     )
-    battle_complete_combat_skill_id: combat_skill | str = Field(
+    battle_complete_combat_skill_id: combat_skill_type | str = Field(
         default=None,
         title="战斗完成时战斗技能ID",
         description="战斗完成时战斗技能ID",
@@ -488,7 +488,7 @@ class mode(BaseModel):
     )
 
 
-class overstressed_modifier(BaseModel):
+class overstressed_modifier_type(BaseModel):
     override_trait_type_ids: list[trait | str] = Field(
         default=None,
         title="爆压traitID",
@@ -503,7 +503,7 @@ class overstressed_modifier(BaseModel):
     )
 
 
-class quirk_modifier(BaseModel):
+class quirk_modifier_type(BaseModel):
     incompatible_class_ids: list[str] = Field(
         default=None,
         title="不兼容ClassID",
@@ -512,7 +512,7 @@ class quirk_modifier(BaseModel):
     )
 
 
-class activity_modifier(BaseModel):
+class activity_modifier_type(BaseModel):
     override_valid_activity_ids: list[str] = Field(
         default=None,
         title="有效活动ID",
@@ -521,7 +521,7 @@ class activity_modifier(BaseModel):
     )
 
 
-class incompatible_party_member(BaseModel):
+class incompatible_party_member_type(BaseModel):
     id: str = Field(
         default=None,
         title="ID",
@@ -536,7 +536,7 @@ class incompatible_party_member(BaseModel):
     )
 
 
-class deaths_door(BaseModel):
+class deaths_door_type(BaseModel):
     enter_effects: list[effect_type | str] = Field(
         default=None,
         title="死门入effectID",
@@ -563,7 +563,7 @@ class deaths_door(BaseModel):
     )
 
 
-class hp_reaction(BaseModel):
+class hp_reaction_type(BaseModel):
     hp_ratio: float = Field(
         default=None,
         title="血量比例",
@@ -584,7 +584,7 @@ class hp_reaction(BaseModel):
     )
 
 
-class death_reaction(BaseModel):
+class death_reaction_type(BaseModel):
     target_allies: bool = Field(
         default=None,
         title="是否目标盟友",
@@ -605,7 +605,7 @@ class death_reaction(BaseModel):
     )
 
 
-class controlled(BaseModel):
+class controlled_type(BaseModel):
     target_rank: int = Field(
         default=None,
         title="目标优先级",
@@ -614,7 +614,7 @@ class controlled(BaseModel):
     )
 
 
-class id_index(BaseModel):
+class id_index_type(BaseModel):
     index: int = Field(
         default=None,
         title="索引",
@@ -623,7 +623,7 @@ class id_index(BaseModel):
     )
 
 
-class extra_battle_loot(BaseModel):
+class extra_battle_loot_type(BaseModel):
     code: loot | str = Field(
         default=None,
         title="Code",
@@ -638,7 +638,7 @@ class extra_battle_loot(BaseModel):
     )
 
 
-class extra_curio_loot(BaseModel):
+class extra_curio_loot_type(BaseModel):
     code: loot | str = Field(
         default=None,
         title="Code",
@@ -653,7 +653,7 @@ class extra_curio_loot(BaseModel):
     )
 
 
-class skill_selection(BaseModel):
+class skill_selection_type(BaseModel):
     can_select_combat_skills: bool = Field(
         default=None,
         title="是否可选战斗技能",
@@ -668,7 +668,7 @@ class skill_selection(BaseModel):
     )
 
 
-class generation(BaseModel):
+class generation_type(BaseModel):
     is_generation_enabled: bool = Field(
         default=None,
         title="是否生效",
@@ -727,5 +727,104 @@ class generation(BaseModel):
         default=None,
         title="卡牌概率",
         description="卡牌概率",
+        json_schema_extra={"format": {"zh-cn": ""}, "tags": []},
+    )
+
+
+class hero_info(BaseModel):
+    resistances: resistances_type = Field(
+        default=None,
+        title="抗性",
+        description="抗性",
+        json_schema_extra={"format": {"zh-cn": ""}, "tags": []},
+    )
+    crit: crit_type = Field(
+        default=None,
+        title="暴击效果",
+        description="暴击效果",
+        json_schema_extra={"format": {"zh-cn": ""}, "tags": []},
+    )
+    weapon: list[weapon_type] = Field(
+        default=None,
+        title="武器",
+        description="武器",
+        json_schema_extra={"format": {"zh-cn": ""}, "tags": []},
+    )
+    armour: list[armour_type] = Field(
+        default=None,
+        title="护甲",
+        description="护甲",
+        json_schema_extra={"format": {"zh-cn": ""}, "tags": []},
+    )
+    combat_skill: list[combat_skill_type] = Field(
+        default=None,
+        json_schema_extra={"format": {"zh-cn": ""}, "tags": []},
+    )
+    riposte_skill: list[combat_skill_type] = Field(
+        default=None,
+        json_schema_extra={"format": {"zh-cn": ""}, "tags": []},
+    )
+    combat_move_skill: list[combat_skill_type] = Field(
+        default=None,
+        json_schema_extra={"format": {"zh-cn": ""}, "tags": []},
+    )
+    tag: list[tag_type] = Field(
+        default=None,
+        json_schema_extra={"format": {"zh-cn": ""}, "tags": []},
+    )
+    mode: list[mode_type] = Field(
+        default=None,
+        json_schema_extra={"format": {"zh-cn": ""}, "tags": []},
+    )
+    overstressed_modifier: list[overstressed_modifier_type] = Field(
+        default=None,
+        json_schema_extra={"format": {"zh-cn": ""}, "tags": []},
+    )
+    quirk_modifier: list[quirk_modifier_type] = Field(
+        default=None,
+        json_schema_extra={"format": {"zh-cn": ""}, "tags": []},
+    )
+    activity_modifier: list[activity_modifier_type] = Field(
+        default=None,
+        json_schema_extra={"format": {"zh-cn": ""}, "tags": []},
+    )
+    incompatible_party_member: list[incompatible_party_member_type] = Field(
+        default=None,
+        json_schema_extra={"format": {"zh-cn": ""}, "tags": []},
+    )
+    deaths_door: list[deaths_door_type] = Field(
+        default=None,
+        json_schema_extra={"format": {"zh-cn": ""}, "tags": []},
+    )
+    hp_reaction: list[hp_reaction_type] = Field(
+        default=None,
+        json_schema_extra={"format": {"zh-cn": ""}, "tags": []},
+    )
+    death_reaction: list[death_reaction_type] = Field(
+        default=None,
+        json_schema_extra={"format": {"zh-cn": ""}, "tags": []},
+    )
+    controlled: controlled_type = Field(
+        default=None,
+        json_schema_extra={"format": {"zh-cn": ""}, "tags": []},
+    )
+    id_index: id_index_type = Field(
+        default=None,
+        json_schema_extra={"format": {"zh-cn": ""}, "tags": []},
+    )
+    extra_battle_loot: list[extra_battle_loot_type] = Field(
+        default=None,
+        json_schema_extra={"format": {"zh-cn": ""}, "tags": []},
+    )
+    extra_curio_loot: list[extra_curio_loot_type] = Field(
+        default=None,
+        json_schema_extra={"format": {"zh-cn": ""}, "tags": []},
+    )
+    skill_selection: list[skill_selection_type] = Field(
+        default=None,
+        json_schema_extra={"format": {"zh-cn": ""}, "tags": []},
+    )
+    generation: generation_type = Field(
+        default=None,
         json_schema_extra={"format": {"zh-cn": ""}, "tags": []},
     )

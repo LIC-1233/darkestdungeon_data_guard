@@ -5,7 +5,7 @@ from typing import Callable
 from DarkestDungeonClass.dd_game_type.base import BaseModel
 from DarkestDungeonClass.dd_game_type.effect.effect import effect
 from DarkestDungeonClass.dd_game_type.file.effect import effect_file
-from DarkestDungeonClass.dd_game_type.file.hero_info import heroes_info_file
+from DarkestDungeonClass.dd_game_type.file.hero_info import hero_info_file
 from DarkestDungeonClass.mod import mod
 
 
@@ -152,8 +152,8 @@ class mod_manager:
             for mod_ in self.mods_map.values()
             for effect_map in mod_.effects.data_maps
         ]
-        self.heroes: list[path_entry[heroes_info_file]] = [
-            path_entry[heroes_info_file](path=hero_map.path, data=hero_map.data)
+        self.heroes: list[path_entry[hero_info_file]] = [
+            path_entry[hero_info_file](path=hero_map.path, data=hero_map.data)
             for mod_ in self.mods_map.values()
             for hero_map in mod_.heroes.data_maps
         ]
@@ -162,7 +162,7 @@ class mod_manager:
         self.effectId_pathEntries: dict[str, list[path_entry[effect]]] = defaultdict(
             list
         )  # TODO 只应该在初始化时使用，后续在其他类的映射里修改
-        self.hero_id_map: dict[str, list[path_entry[heroes_info_file]]] = defaultdict(
+        self.hero_id_map: dict[str, list[path_entry[hero_info_file]]] = defaultdict(
             list
         )
         for effect_path_entry in self.effects:
@@ -172,28 +172,27 @@ class mod_manager:
                 )
         for hero_path_entry in self.heroes:
             self.hero_id_map[hero_path_entry.path.parent.name].append(
-                path_entry[heroes_info_file](
+                path_entry[hero_info_file](
                     path=hero_path_entry.path, data=hero_path_entry.data
                 )
             )
-        self.hero_inner_map_init()
+        # self.hero_inner_map_init()
 
     def hero_inner_map_init(self):
         for heros in self.hero_id_map.values():
             for hero_path_entry in heros:
                 _hero_path = hero_path_entry.path
                 hero_obj = hero_path_entry.data
-                for crit_ in hero_obj.crit:
-                    if crit_.effects:
-                        for effect_index in range(len(crit_.effects)):
-                            effect_id = crit_.effects[effect_index]
-                            if (
-                                isinstance(effect_id, str)
-                                and effect_id in self.effectId_pathEntries
-                            ):
-                                crit_.effects[effect_index] = self.effectId_pathEntries[
-                                    effect_id
-                                ][0].data
+                if hero_obj.crit.effects:
+                    for effect_index in range(len(hero_obj.crit.effects)):
+                        effect_id = hero_obj.crit.effects[effect_index]
+                        if (
+                            isinstance(effect_id, str)
+                            and effect_id in self.effectId_pathEntries
+                        ):
+                            hero_obj.crit.effects[effect_index] = (
+                                self.effectId_pathEntries[effect_id][0].data
+                            )
                 for combat_skill_ in hero_obj.combat_skill:
                     if combat_skill_.effect:
                         for effect_index in range(len(combat_skill_.effect)):

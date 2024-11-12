@@ -12,7 +12,7 @@ from DarkestDungeonClass.dd_game_type.enum.type_enum import (
     int_bool_enum,
 )
 from DarkestDungeonClass.dd_game_type.file.effect import effect_file
-from DarkestDungeonClass.dd_game_type.file.hero_info import heroes_info_file
+from DarkestDungeonClass.dd_game_type.file.hero_info import hero_info_file
 
 logger = logging.getLogger()
 
@@ -345,18 +345,18 @@ class darkest:
             )
         yield None
 
-T = TypeVar("T", bound=effect_file | heroes_info_file)
+T = TypeVar("T", bound=effect_file | hero_info_file)
 
 
 class file_parser(Generic[T]):
     def __init__(self, file_type: Type[T]):
-        self.file_pk_type = {"hero_info": heroes_info_file, "effect": effect_file}
+        self.file_pk_type = {"hero_info": hero_info_file, "effect": effect_file}
         self.file_type: type[T] = file_type
 
         self.init()
 
     def init(self) -> None:
-        self.file_pk_type = {"hero_info": heroes_info_file, "effect": effect_file}
+        self.file_pk_type = {"hero_info": hero_info_file, "effect": effect_file}
         self.effect_id_entries: dict[str, list[effect]] = defaultdict(list)
         self.pk_id_entries: dict[str, list[BaseModel]] = defaultdict(list)
         self._keys_to_type: dict[tuple[str, str], type] = {}

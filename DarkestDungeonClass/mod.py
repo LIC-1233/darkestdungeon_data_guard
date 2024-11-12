@@ -7,7 +7,7 @@ from DarkestDungeonClass.darkest import file_parser
 from DarkestDungeonClass.dd_game_type.base import BaseModel
 from DarkestDungeonClass.dd_game_type.file.buff import buff_file
 from DarkestDungeonClass.dd_game_type.file.effect import effect_file
-from DarkestDungeonClass.dd_game_type.file.hero_info import heroes_info_file
+from DarkestDungeonClass.dd_game_type.file.hero_info import hero_info_file
 from DarkestDungeonClass.dd_game_type.file.loot import loot_file
 from DarkestDungeonClass.dd_game_type.file.trait import trait_file
 from DarkestDungeonClass.util import xml_data
@@ -52,7 +52,7 @@ class mod(BaseModel):
     mod_path: Path = Field(default=None)
     xml_info: xml_data = Field(default=None)
     effects: model_regex[effect_file] = Field(default=None)
-    heroes: model_regex[heroes_info_file] = Field(default=None)
+    heroes: model_regex[hero_info_file] = Field(default=None)
     buffs: model_regex[buff_file] = Field(default=None)
     loots: model_regex[loot_file] = Field(default=None)
     traits: model_regex[trait_file] = Field(default=None)
@@ -86,9 +86,9 @@ class mod(BaseModel):
                 "dlc/*/features/*/modes/*/effects/*.darkest",
             ],
         )
-        self.heroes: model_regex[heroes_info_file] = model_regex(
+        self.heroes: model_regex[hero_info_file] = model_regex(
             name="hero_info",
-            dataModel=file_parser(heroes_info_file).darkest_paser,
+            dataModel=file_parser(hero_info_file).darkest_paser,
             regexFile=[
                 "heroes/*/*info.darkest",
                 "heroes/*/*override.darkest",
